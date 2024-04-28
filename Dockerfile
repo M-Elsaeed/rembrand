@@ -1,25 +1,27 @@
-# Use an official Python runtime as a parent image
-FROM python:3.7.6-slim
+# Use Ubuntu as the base image
+FROM ubuntu:latest
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-# RUN apt-get update && apt-get install -y blender && python -m pip install pip==20.2.4 && pip install future_fstrings && pip install bpy
-# RUN python -m pip install pip==20.2.4 && pip install future_fstrings && pip install bpy
+# Install Python 3.10 and pip
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    apt-get install -y python3.10 python3.10-distutils && \
+    apt-get install -y python3-pip && \
+    python3.10 -m pip install --upgrade pip
 
-# Copy the current directory contents into the container at /usr/src/app
+# Install bpy
+RUN python3.10 -m pip install bpy==4.0.0
+RUN python3.10 -m pip install boto3
+RUN apt-get update && apt-get install -y blender
+RUN apt-get update && apt-get install -y xorg
+
+
+# Copy the Python script into the container
 COPY . .
 
-# Install any needed packages specified in requirements.txt
-# RUN pip install --no-cache-dir -r requirements.txt
-
-# Make port 80 available to the world outside this container
-EXPOSE 80
-
-# Define environment variable
-ENV NAME World
-
-# Run app.py when the container launches
-CMD ["python", "./task_conumer.py"]
-
-# RUN python ./task_conumer.py
+# Run the Python script
+CMD ["python3.10", "./task_conumer.py"]
