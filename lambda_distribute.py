@@ -5,6 +5,8 @@ import time
 
 def lambda_handler(event, context):
     print(event)
+    if "body" in event:
+        event["body"] = json.loads(event["body"])
     url = event['body']['blender_url'] if 'body' in event else event['blender_url']
     start = int(event['body']['blender_start']) if 'body' in event else int(event['blender_start'])
     end = int(event['body']['blender_end']) if 'body' in event else int(event['blender_end'])
@@ -58,14 +60,14 @@ def lambda_handler(event, context):
             print(len(response['failures']))
             print(response)
             if len(response['failures']) == 0:
-                break
+                retries += 10
             else:
                 time.sleep(5)
                 retries += 1
     
     return {
         'statusCode': 200,
-        'body': json.dumps('ECS tasks invoked successfully.')
+        'body': json.dumps(f'ECS tasks invoked successfully. job_id: { job_id}')
     }
 
 # Test the lambda function
