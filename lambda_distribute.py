@@ -25,4 +25,6 @@ def lambda_handler(event, context):
             "job_id": job_id
         })
     
+    tasks_parameters[-1]['end'] = str(int(end) + 1)
+    
     return tasks_parameters
